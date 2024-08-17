@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -40,19 +41,40 @@ var (
 )
 
 func transcript(w fyne.Window) fyne.CanvasObject {
-	icon := widget.NewIcon(nil)
-	spImg := canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png")
-	spImg.SetMinSize(fyne.NewSize(100, 100))
-	spLabel := widget.NewLabel("Select An Item From The List")
-	spLabel.Alignment = fyne.TextAlignCenter
-	sidePanel := container.NewVBox(spImg, spLabel)
+	spEntry := widget.NewEntry()
+	spEntry.Text = ""
+	spEntry.SetPlaceHolder("Click on a symbol to transcribe it")
+	// spSymbols := []canvas.Image{}
+	clipboardCopyButton := widget.NewButton("Copy me!", func() {
+		if len(spEntry.Text) == 0 {
+			fyne.CurrentApp().SendNotification(&fyne.Notification{
+				Title:   "Tunic Translator",
+				Content: "Nothing to copy mate",
+			})
+			return
+		}
+		w.Clipboard().SetContent(spEntry.Text)
+		fyne.CurrentApp().SendNotification(&fyne.Notification{
+			Title:   "Tunic Translator",
+			Content: "Text has been copied to clipboard!",
+		})
+	})
+
+	sidePanel := container.NewVBox(
+		layout.NewSpacer(),
+		container.NewGridWithColumns(3,
+			layout.NewSpacer(),
+			container.NewVBox(spEntry, clipboardCopyButton),
+			layout.NewSpacer()),
+		layout.NewSpacer(),
+	)
 
 	grid := widget.NewGridWrap(
 		func() int {
 			return len(alphabetMap)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 100), canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png"))
+			return container.NewGridWrap(fyne.NewSize(100, 108), canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = alphabetMap[id].Img
@@ -60,28 +82,16 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	)
 	grid.OnSelected = func(id widget.ListItemID) {
 		// when an item is selected, update the sidepanel
-		fmt.Printf("Selected: %d\n", id)
-		spLabel.SetText(alphabetMap[id].Rune)
-		// spImg = alphabetMap[3].Img
-
-		spImg = alphabetMap[id].Img
-		spImg.SetMinSize(fyne.NewSize(100, 100))
-		sidePanel.Objects[0] = spImg
-
+		spEntry.Text = fmt.Sprintf("%s%s", spEntry.Text, alphabetMap[id].Rune)
+		spEntry.Refresh()
 	}
-	grid.OnUnselected = func(id widget.ListItemID) {
-		spLabel.SetText("Select An Item From The List")
-		icon.SetResource(nil)
-	}
-	grid.Select(15)
 
-	split := container.NewHSplit(grid, container.NewCenter(sidePanel))
-	split.Offset = 0.6
+	split := container.NewVSplit(grid, sidePanel)
+	split.Offset = 0.8
 	return split
 }
 
 func lexicon(w fyne.Window) fyne.CanvasObject {
-	icon := widget.NewIcon(nil)
 	spImg := canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png")
 	spImg.SetMinSize(fyne.NewSize(100, 108))
 	spLabel := widget.NewLabel("Select An Item From The List")
@@ -109,10 +119,7 @@ func lexicon(w fyne.Window) fyne.CanvasObject {
 		sidePanel.Objects[0] = spImg
 
 	}
-	grid.OnUnselected = func(id widget.ListItemID) {
-		spLabel.SetText("Select An Item From The List")
-		icon.SetResource(nil)
-	}
+
 	grid.Select(15)
 
 	split := container.NewHSplit(grid, container.NewCenter(sidePanel))

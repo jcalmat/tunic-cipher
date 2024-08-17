@@ -65,10 +65,6 @@ func (a *App) CreateWindow() {
 		title.SetText(t.Title)
 		intro.SetText(t.Intro)
 
-		// TODO: remove if it's by default
-		// title.Show()
-		// intro.Show()
-
 		content.Objects = []fyne.CanvasObject{t.View(a.Window)}
 		content.Refresh()
 	}
@@ -128,7 +124,7 @@ func makeNav(setView func(view View)) fyne.CanvasObject {
 	)
 
 	// load saved view
-	currentPref := a.Preferences().StringWithFallback(preferenceCurrentView, "welcome")
+	currentPref := a.Preferences().StringWithFallback(preferenceCurrentView, "transcriptor") //TODO: change to welcome
 	tree.Select(currentPref)
 
 	return container.NewBorder(nil, themes, nil, nil, tree)
