@@ -6,7 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -41,88 +41,123 @@ var (
 )
 
 func transcript(w fyne.Window) fyne.CanvasObject {
-	spEntry := widget.NewEntry()
-	spEntry.Text = ""
-	spEntry.SetPlaceHolder("Click on a symbol to transcribe it")
-	// spSymbols := []canvas.Image{}
+	// #Init output row
+	outputEntry := widget.NewEntry()
+	outputEntry.Text = ""
+	outputEntry.SetPlaceHolder("Click on a symbol to transcribe it")
+
+	// init delete button
+	deleteButton := widget.NewButtonWithIcon("", theme.ContentClearIcon(), func() {
+		if len(outputEntry.Text) == 0 {
+			return
+		}
+		outputEntry.Text = outputEntry.Text[:len(outputEntry.Text)-1]
+		outputEntry.Refresh()
+	})
+	// position delete button to the right of the outputEntry
+	outputRow := container.NewBorder(nil, nil, nil, deleteButton, outputEntry)
+
+	// #Init utils row (copy to clipboard and reset output)
 	clipboardCopyButton := widget.NewButton("Copy me!", func() {
-		if len(spEntry.Text) == 0 {
+		if len(outputEntry.Text) == 0 {
 			fyne.CurrentApp().SendNotification(&fyne.Notification{
 				Title:   "Tunic Translator",
 				Content: "Nothing to copy mate",
 			})
 			return
 		}
-		w.Clipboard().SetContent(spEntry.Text)
+		w.Clipboard().SetContent(outputEntry.Text)
 		fyne.CurrentApp().SendNotification(&fyne.Notification{
 			Title:   "Tunic Translator",
 			Content: "Text has been copied to clipboard!",
 		})
 	})
+	resetButton := widget.NewButton("Reset", func() {
+		outputEntry.Text = ""
+		outputEntry.Refresh()
+	})
+	// position the buttons at the right of the window
+	utilsRow := container.NewBorder(nil, nil, nil, container.NewBorder(nil, nil, clipboardCopyButton, resetButton))
 
-	sidePanel := container.NewVBox(
-		layout.NewSpacer(),
-		container.NewGridWithColumns(3,
-			layout.NewSpacer(),
-			container.NewVBox(spEntry, clipboardCopyButton),
-			layout.NewSpacer()),
-		layout.NewSpacer(),
-	)
-
-	grid := widget.NewGridWrap(
+	// # Handle letters grids
+	vowelsGrid := widget.NewGridWrap(
 		func() int {
-			return len(alphabetMap)
+			return len(vowels)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 108), canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png"))
+			return container.NewGridWrap(fyne.NewSize(100, 100), canvas.NewImageFromFile("pkg/fyne/data/alphabet/1.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[0] = alphabetMap[id].Img
+			item.(*fyne.Container).Objects[0] = vowels[id].Img
 		},
 	)
-	grid.OnSelected = func(id widget.ListItemID) {
+	vowelsGrid.OnSelected = func(id widget.ListItemID) {
 		// when an item is selected, update the sidepanel
-		spEntry.Text = fmt.Sprintf("%s%s", spEntry.Text, alphabetMap[id].Rune)
-		spEntry.Refresh()
+		outputEntry.SetText(fmt.Sprintf("%s%s", outputEntry.Text, vowels[id].Rune))
+		vowelsGrid.Unselect(id)
 	}
 
-	split := container.NewVSplit(grid, sidePanel)
-	split.Offset = 0.8
-	return split
+	consonantsGrid := widget.NewGridWrap(
+		func() int {
+			return len(consonants)
+		},
+		func() fyne.CanvasObject {
+			return container.NewGridWrap(fyne.NewSize(100, 100), canvas.NewImageFromFile("pkg/fyne/data/alphabet/20.png"))
+		},
+		func(id widget.ListItemID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[0] = consonants[id].Img
+		},
+	)
+	consonantsGrid.OnSelected = func(id widget.ListItemID) {
+		// when an item is selected, update the sidepanel
+		outputEntry.SetText(fmt.Sprintf("%s%s", outputEntry.Text, consonants[id].Rune))
+		consonantsGrid.Unselect(id)
+	}
+
+	// # Grid layout
+	gridLayout := container.NewGridWithColumns(2,
+		container.NewBorder(widget.NewLabel("Vowels"), nil, nil, nil, vowelsGrid),
+		container.NewBorder(widget.NewLabel("Consonants"), nil, nil, nil, consonantsGrid),
+	)
+
+	view := container.NewBorder(container.NewBorder(outputRow, utilsRow, nil, nil), nil, nil, nil, gridLayout)
+
+	return view
 }
 
 func lexicon(w fyne.Window) fyne.CanvasObject {
-	spImg := canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png")
-	spImg.SetMinSize(fyne.NewSize(100, 108))
-	spLabel := widget.NewLabel("Select An Item From The List")
-	spLabel.Alignment = fyne.TextAlignCenter
-	sidePanel := container.NewVBox(spImg, spLabel)
+	// spImg := canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png")
+	// spImg.SetMinSize(fyne.NewSize(100, 108))
+	// spLabel := widget.NewLabel("Select An Item From The List")
+	// spLabel.Alignment = fyne.TextAlignCenter
+	// sidePanel := container.NewVBox(spImg, spLabel)
 
-	grid := widget.NewGridWrap(
-		func() int {
-			return len(alphabetMap)
-		},
-		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 108), canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png"))
-		},
-		func(id widget.ListItemID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[0] = alphabetMap[id].Img
-		},
-	)
-	grid.OnSelected = func(id widget.ListItemID) {
-		// when an item is selected, update the sidepanel
-		spLabel.SetText(alphabetMap[id].Rune)
-		// spImg = alphabetMap[3].Img
+	// grid := widget.NewGridWrap(
+	// 	func() int {
+	// 		return len(alphabetMap)
+	// 	},
+	// 	func() fyne.CanvasObject {
+	// 		return container.NewGridWrap(fyne.NewSize(100, 108), canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png"))
+	// 	},
+	// 	func(id widget.ListItemID, item fyne.CanvasObject) {
+	// 		item.(*fyne.Container).Objects[0] = alphabetMap[id].Img
+	// 	},
+	// )
+	// grid.OnSelected = func(id widget.ListItemID) {
+	// 	// when an item is selected, update the sidepanel
+	// 	spLabel.SetText(alphabetMap[id].Rune)
+	// 	// spImg = alphabetMap[3].Img
 
-		spImg = alphabetMap[id].Img
-		spImg.SetMinSize(fyne.NewSize(100, 108))
-		sidePanel.Objects[0] = spImg
+	// 	spImg = alphabetMap[id].Img
+	// 	spImg.SetMinSize(fyne.NewSize(100, 108))
+	// 	sidePanel.Objects[0] = spImg
 
-	}
+	// }
 
-	grid.Select(15)
+	// grid.Select(15)
 
-	split := container.NewHSplit(grid, container.NewCenter(sidePanel))
-	split.Offset = 0.6
-	return split
+	// split := container.NewHSplit(grid, container.NewCenter(sidePanel))
+	// split.Offset = 0.6
+	// return split
+	return widget.NewLabel("Lexicon")
 }

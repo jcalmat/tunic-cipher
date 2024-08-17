@@ -59,17 +59,15 @@ func (a *App) CreateWindow() {
 
 	content := container.NewStack()
 	title := widget.NewLabel("Welcome to Tunic Translator")
-	intro := widget.NewLabel("An introduction would probably go\nhere, as well as a")
 
 	setView := func(t View) {
 		title.SetText(t.Title)
-		intro.SetText(t.Intro)
 
 		content.Objects = []fyne.CanvasObject{t.View(a.Window)}
 		content.Refresh()
 	}
 
-	view := container.NewBorder(container.NewVBox(title, widget.NewSeparator(), intro), nil, nil, nil, content)
+	view := container.NewBorder(container.NewVBox(title, widget.NewSeparator()), nil, nil, nil, content)
 
 	// split screen with navigation
 	split := container.NewHSplit(makeNav(setView), view)
