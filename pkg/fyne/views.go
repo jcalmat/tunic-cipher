@@ -36,7 +36,7 @@ var (
 
 	// ViewIndex  defines how our views should be laid out in the index tree
 	ViewIndex = map[string][]string{
-		"": {"welcome", "transcriptor", "lexicon"},
+		"": {"transcriptor", "lexicon"},
 	}
 )
 
@@ -85,7 +85,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(vowels)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 100), canvas.NewImageFromFile("pkg/fyne/data/alphabet/1.png"))
+			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("pkg/fyne/data/alphabet/1.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = vowels[id].Img
@@ -102,7 +102,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(consonants)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 100), canvas.NewImageFromFile("pkg/fyne/data/alphabet/20.png"))
+			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("pkg/fyne/data/alphabet/20.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = consonants[id].Img
@@ -119,7 +119,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(specialChars)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 100), canvas.NewImageFromFile("pkg/fyne/data/alphabet/1.png"))
+			return container.NewGridWrap(fyne.NewSize(75, 75), canvas.NewImageFromFile("pkg/fyne/data/alphabet/1.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = specialChars[id].Img
@@ -157,38 +157,19 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 }
 
 func lexicon(w fyne.Window) fyne.CanvasObject {
-	// spImg := canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png")
-	// spImg.SetMinSize(fyne.NewSize(100, 108))
-	// spLabel := widget.NewLabel("Select An Item From The List")
-	// spLabel.Alignment = fyne.TextAlignCenter
-	// sidePanel := container.NewVBox(spImg, spLabel)
+	combinedList := append(vowels, consonants...)
 
-	// grid := widget.NewGridWrap(
-	// 	func() int {
-	// 		return len(alphabetMap)
-	// 	},
-	// 	func() fyne.CanvasObject {
-	// 		return container.NewGridWrap(fyne.NewSize(100, 108), canvas.NewImageFromFile("pkg/fyne/data/alphabet/Pasted image 20240808232424.png"))
-	// 	},
-	// 	func(id widget.ListItemID, item fyne.CanvasObject) {
-	// 		item.(*fyne.Container).Objects[0] = alphabetMap[id].Img
-	// 	},
-	// )
-	// grid.OnSelected = func(id widget.ListItemID) {
-	// 	// when an item is selected, update the sidepanel
-	// 	spLabel.SetText(alphabetMap[id].Rune)
-	// 	// spImg = alphabetMap[3].Img
+	objs := make([]fyne.CanvasObject, len(combinedList))
+	for i := range combinedList {
+		text := widget.NewLabel(combinedList[i].Rune)
+		text.Alignment = fyne.TextAlignCenter
+		img := combinedList[i].Img
+		objs[i] = container.NewBorder(nil, text, nil, nil, img)
+	}
 
-	// 	spImg = alphabetMap[id].Img
-	// 	spImg.SetMinSize(fyne.NewSize(100, 108))
-	// 	sidePanel.Objects[0] = spImg
+	// warning: using container.NewGridWrap will not allow the user to resize the window
+	// smaller than the size of the grid
+	alphabetGrid := container.NewGridWrap(fyne.NewSize(75, 120), objs...)
 
-	// }
-
-	// grid.Select(15)
-
-	// split := container.NewHSplit(grid, container.NewCenter(sidePanel))
-	// split.Offset = 0.6
-	// return split
-	return widget.NewLabel("Lexicon")
+	return alphabetGrid
 }
