@@ -64,3 +64,9 @@ var consonants = []alphabetItem{
 	{Img: canvas.NewImageFromFile("./pkg/fyne/data/alphabet/41.png"), Type: Consonant, Rune: "w"},
 	{Img: canvas.NewImageFromFile("./pkg/fyne/data/alphabet/42.png"), Type: Consonant, Rune: "l"},
 }
+
+var specialChars = []alphabetItem{
+	{Img: canvas.NewImageFromFile("./pkg/fyne/data/punctuation/space.png"), Type: Special, Rune: " "},
+	{Img: canvas.NewImageFromFile("./pkg/fyne/data/punctuation/exclamation mark.png"), Type: Special, Rune: "!"},
+	{Img: canvas.NewImageFromFile("./pkg/fyne/data/punctuation/question mark.png"), Type: Special, Rune: "?"},
+}

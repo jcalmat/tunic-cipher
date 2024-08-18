@@ -47,7 +47,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	outputEntry.SetPlaceHolder("Click on a symbol to transcribe it")
 
 	// init delete button
-	deleteButton := widget.NewButtonWithIcon("", theme.ContentClearIcon(), func() {
+	deleteButton := widget.NewButtonWithIcon("", theme.ContentUndoIcon(), func() {
 		if len(outputEntry.Text) == 0 {
 			return
 		}
@@ -58,7 +58,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	outputRow := container.NewBorder(nil, nil, nil, deleteButton, outputEntry)
 
 	// #Init utils row (copy to clipboard and reset output)
-	clipboardCopyButton := widget.NewButton("Copy me!", func() {
+	clipboardCopyButton := widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
 		if len(outputEntry.Text) == 0 {
 			fyne.CurrentApp().SendNotification(&fyne.Notification{
 				Title:   "Tunic Translator",
@@ -72,7 +72,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			Content: "Text has been copied to clipboard!",
 		})
 	})
-	resetButton := widget.NewButton("Reset", func() {
+	resetButton := widget.NewButtonWithIcon("", theme.ContentClearIcon(), func() {
 		outputEntry.Text = ""
 		outputEntry.Refresh()
 	})
@@ -114,13 +114,44 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 		consonantsGrid.Unselect(id)
 	}
 
+	specialCharsGrid := widget.NewGridWrap(
+		func() int {
+			return len(specialChars)
+		},
+		func() fyne.CanvasObject {
+			return container.NewGridWrap(fyne.NewSize(100, 100), canvas.NewImageFromFile("pkg/fyne/data/alphabet/1.png"))
+		},
+		func(id widget.ListItemID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[0] = specialChars[id].Img
+		},
+	)
+	specialCharsGrid.OnSelected = func(id widget.ListItemID) {
+		// when an item is selected, update the sidepanel
+		outputEntry.SetText(fmt.Sprintf("%s%s", outputEntry.Text, specialChars[id].Rune))
+		specialCharsGrid.Unselect(id)
+	}
+
 	// # Grid layout
 	gridLayout := container.NewGridWithColumns(2,
 		container.NewBorder(widget.NewLabel("Vowels"), nil, nil, nil, vowelsGrid),
 		container.NewBorder(widget.NewLabel("Consonants"), nil, nil, nil, consonantsGrid),
 	)
 
-	view := container.NewBorder(container.NewBorder(outputRow, utilsRow, nil, nil), nil, nil, nil, gridLayout)
+	view := container.NewBorder(
+		container.NewBorder(outputRow, utilsRow, nil, nil),
+		nil,
+		nil,
+		nil,
+		container.NewBorder(
+			nil,
+			container.NewPadded(
+				specialCharsGrid,
+			),
+			nil,
+			nil,
+			container.NewPadded(gridLayout),
+		),
+	)
 
 	return view
 }

@@ -13,6 +13,14 @@ all: test build
 build:
 	$(GOBUILD) -o $(APP_NAME) ./...
 
+tidy:
+	$(GOCMD) mod tidy
+
+vendor:
+	$(GOCMD) mod vendor
+
+run:
+	$(GOCMD) run ./...
 # Run tests
 test:
 	$(GOTEST) -v ./...
