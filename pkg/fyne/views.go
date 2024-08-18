@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
@@ -55,7 +56,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 		outputEntry.Refresh()
 	})
 	// position delete button to the right of the outputEntry
-	outputRow := container.NewBorder(nil, nil, nil, deleteButton, outputEntry)
+	outputRow := container.NewBorder(nil, container.NewPadded(widget.NewSeparator()), nil, deleteButton, outputEntry)
 
 	// #Init utils row (copy to clipboard and reset output)
 	clipboardCopyButton := widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
@@ -77,7 +78,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 		outputEntry.Refresh()
 	})
 	// position the buttons at the right of the window
-	utilsRow := container.NewBorder(nil, nil, nil, container.NewBorder(nil, nil, clipboardCopyButton, resetButton))
+	utilsRow := container.NewBorder(nil, container.NewPadded(widget.NewSeparator()), nil, container.NewBorder(nil, nil, clipboardCopyButton, resetButton))
 
 	// # Handle letters grids
 	vowelsGrid := widget.NewGridWrap(
@@ -85,7 +86,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(vowels)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("pkg/fyne/data/alphabet/1.png"))
+			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("resources/alphabet/1.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = vowels[id].Img
@@ -102,7 +103,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(consonants)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("pkg/fyne/data/alphabet/20.png"))
+			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("resources/alphabet/20.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = consonants[id].Img
@@ -119,7 +120,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(specialChars)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(75, 75), canvas.NewImageFromFile("pkg/fyne/data/alphabet/1.png"))
+			return container.NewGridWrap(fyne.NewSize(75, 75), canvas.NewImageFromFile("resources/alphabet/1.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = specialChars[id].Img
@@ -145,6 +146,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 		container.NewBorder(
 			nil,
 			container.NewPadded(
+				layout.NewSpacer(),
 				specialCharsGrid,
 			),
 			nil,
@@ -169,7 +171,7 @@ func lexicon(w fyne.Window) fyne.CanvasObject {
 
 	// warning: using container.NewGridWrap will not allow the user to resize the window
 	// smaller than the size of the grid
-	alphabetGrid := container.NewGridWrap(fyne.NewSize(75, 120), objs...)
+	alphabetGrid := container.NewPadded(container.NewGridWrap(fyne.NewSize(75, 120), objs...))
 
 	return alphabetGrid
 }
