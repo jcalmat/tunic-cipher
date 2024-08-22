@@ -23,7 +23,7 @@ type Fyne struct {
 func New(logger *zerolog.Logger) App {
 	return App{
 		Logger: logger,
-		App:    app.New(),
+		App:    app.NewWithID("tunic_transcriptor"),
 	}
 }
 func (a *App) MakeTray() {

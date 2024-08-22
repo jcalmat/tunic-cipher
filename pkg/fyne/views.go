@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/jcalmat/tunic/pkg/fyne/storage"
 )
 
 // View defines the data structure for a view
@@ -45,14 +46,25 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	// #Init output row
 	outputEntry := widget.NewEntry()
 	outputEntry.Text = ""
+	// outputEntry.Disable()
 	outputEntry.SetPlaceHolder("Click on a symbol to transcribe it")
+
+	currentQuery := make(alphabetItems, 0)
+
+	// load saved queries
+	savedQueries, err := storage.LoadQuery[alphabetItems]("saved_queries.json")
+	if err != nil {
+		fmt.Printf("failed to load saved queries: %v\n", err)
+	}
 
 	// init delete button
 	deleteButton := widget.NewButtonWithIcon("", theme.ContentUndoIcon(), func() {
-		if len(outputEntry.Text) == 0 {
+		if len(currentQuery) == 0 {
 			return
 		}
-		outputEntry.Text = outputEntry.Text[:len(outputEntry.Text)-1]
+
+		currentQuery = currentQuery[:len(currentQuery)-1]
+		outputEntry.Text = currentQuery.String()
 		outputEntry.Refresh()
 	})
 	// position delete button to the right of the outputEntry
@@ -60,25 +72,41 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 
 	// #Init utils row (copy to clipboard and reset output)
 	clipboardCopyButton := widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
-		if len(outputEntry.Text) == 0 {
+		if len(currentQuery) == 0 {
 			fyne.CurrentApp().SendNotification(&fyne.Notification{
 				Title:   "Tunic Translator",
 				Content: "Nothing to copy mate",
 			})
 			return
 		}
-		w.Clipboard().SetContent(outputEntry.Text)
+		w.Clipboard().SetContent(currentQuery.String())
 		fyne.CurrentApp().SendNotification(&fyne.Notification{
 			Title:   "Tunic Translator",
 			Content: "Text has been copied to clipboard!",
 		})
 	})
 	resetButton := widget.NewButtonWithIcon("", theme.ContentClearIcon(), func() {
+		currentQuery = make(alphabetItems, 0)
 		outputEntry.Text = ""
 		outputEntry.Refresh()
 	})
+	saveButton := widget.NewButtonWithIcon("", theme.DocumentSaveIcon(), func() {
+		if len(currentQuery) == 0 {
+			return
+		}
+		err := storage.SaveQuery[alphabetItems]("saved_queries.json", append([]alphabetItems{currentQuery}, savedQueries...))
+		if err != nil {
+			fyne.CurrentApp().SendNotification(&fyne.Notification{
+				Title:   "Tunic Translator",
+				Content: "Failed to save: " + err.Error(),
+			})
+			return
+		}
+		savedQueries = append(savedQueries, currentQuery)
+	})
+
 	// position the buttons at the right of the window
-	utilsRow := container.NewBorder(nil, container.NewPadded(widget.NewSeparator()), nil, container.NewBorder(nil, nil, clipboardCopyButton, resetButton))
+	utilsRow := container.NewBorder(nil, container.NewPadded(widget.NewSeparator()), nil, container.NewBorder(nil, nil, container.NewBorder(nil, nil, saveButton, clipboardCopyButton), resetButton))
 
 	// # Handle letters grids
 	vowelsGrid := widget.NewGridWrap(
@@ -94,7 +122,8 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	)
 	vowelsGrid.OnSelected = func(id widget.ListItemID) {
 		// when an item is selected, update the sidepanel
-		outputEntry.SetText(fmt.Sprintf("%s%s", outputEntry.Text, vowels[id].Rune))
+		currentQuery = append(currentQuery, vowels[id])
+		outputEntry.SetText(currentQuery.String())
 		vowelsGrid.Unselect(id)
 	}
 
@@ -111,7 +140,8 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	)
 	consonantsGrid.OnSelected = func(id widget.ListItemID) {
 		// when an item is selected, update the sidepanel
-		outputEntry.SetText(fmt.Sprintf("%s%s", outputEntry.Text, consonants[id].Rune))
+		currentQuery = append(currentQuery, consonants[id])
+		outputEntry.SetText(currentQuery.String())
 		consonantsGrid.Unselect(id)
 	}
 
@@ -128,7 +158,8 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	)
 	specialCharsGrid.OnSelected = func(id widget.ListItemID) {
 		// when an item is selected, update the sidepanel
-		outputEntry.SetText(fmt.Sprintf("%s%s", outputEntry.Text, specialChars[id].Rune))
+		currentQuery = append(currentQuery, specialChars[id])
+		outputEntry.SetText(currentQuery.String())
 		specialCharsGrid.Unselect(id)
 	}
 
@@ -138,12 +169,8 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 		container.NewBorder(widget.NewLabel("Consonants"), nil, nil, nil, consonantsGrid),
 	)
 
-	view := container.NewBorder(
-		container.NewBorder(outputRow, utilsRow, nil, nil),
-		nil,
-		nil,
-		nil,
-		container.NewBorder(
+	tabs := container.NewAppTabs(
+		container.NewTabItem("Glyphes", container.NewBorder(
 			nil,
 			container.NewPadded(
 				layout.NewSpacer(),
@@ -152,26 +179,52 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			nil,
 			nil,
 			container.NewPadded(gridLayout),
-		),
+		)),
+		container.NewTabItem("Saved queries", formatAlphabetGrid(append([]alphabetItems{currentQuery}, savedQueries...))),
+	)
+
+	tabs.OnSelected = func(item *container.TabItem) {
+		if item.Text == "Saved queries" {
+			if len(currentQuery) == 0 {
+				item.Content = formatAlphabetGrid(savedQueries)
+				return
+			}
+			item.Content = formatAlphabetGrid(append([]alphabetItems{currentQuery}, savedQueries...))
+		}
+	}
+
+	view := container.NewBorder(
+		container.NewBorder(outputRow, utilsRow, nil, nil),
+		nil,
+		nil,
+		nil,
+		tabs,
 	)
 
 	return view
 }
 
 func lexicon(w fyne.Window) fyne.CanvasObject {
-	combinedList := append(vowels, consonants...)
+	return formatAlphabetGrid([]alphabetItems{vowels, consonants})
+}
 
-	objs := make([]fyne.CanvasObject, len(combinedList))
-	for i := range combinedList {
-		text := widget.NewLabel(combinedList[i].Rune)
-		text.Alignment = fyne.TextAlignCenter
-		img := combinedList[i].Img
-		objs[i] = container.NewBorder(nil, text, nil, nil, img)
+func formatAlphabetGrid(itemBundles []alphabetItems) fyne.CanvasObject {
+	objs := make([]fyne.CanvasObject, len(itemBundles))
+	for i, bundle := range itemBundles {
+		bundle := bundle
+		currentGrid := make([]fyne.CanvasObject, len(bundle))
+		for j, item := range bundle {
+			item := item
+			text := widget.NewLabel(item.Rune)
+			text.Alignment = fyne.TextAlignCenter
+			newImg := canvas.NewImageFromImage(item.Img.Image)
+			currentGrid[j] = container.NewBorder(nil, text, nil, nil, newImg)
+			_ = item
+		}
+		objs[i] = container.NewGridWrap(fyne.NewSize(75, 120), currentGrid...)
 	}
 
 	// warning: using container.NewGridWrap will not allow the user to resize the window
 	// smaller than the size of the grid
-	alphabetGrid := container.NewPadded(container.NewGridWrap(fyne.NewSize(75, 120), objs...))
-
-	return alphabetGrid
+	return container.NewVBox(objs...)
 }
