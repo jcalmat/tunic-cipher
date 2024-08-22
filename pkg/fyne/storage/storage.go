@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/storage"
 )
 
 type Saver[T any] interface {
@@ -19,6 +20,14 @@ func SaveQuery[T Saver[T]](filepath string, value []T) error {
 	var toSave string
 	for _, v := range value {
 		toSave += v.ToSave() + "\n"
+	}
+
+	_, err := fyne.CurrentApp().Storage().Create(filepath)
+	if err != nil {
+		// if the file already exists, proceed
+		if !errors.Is(err, storage.ErrAlreadyExists) {
+			return errors.New("failed to create file")
+		}
 	}
 
 	// does it work when the file doesn't exist?
