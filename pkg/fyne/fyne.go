@@ -43,22 +43,15 @@ func (a *App) MakeTray() {
 }
 
 func (a *App) CreateWindow() {
-	a.Window = a.App.NewWindow("Tunic Translator")
-
-	hello := widget.NewLabel("Hello Fyne!")
-	a.Window.SetContent(container.NewVBox(
-		hello,
-		widget.NewButton("Hi!", func() {
-			hello.SetText("Welcome :)")
-		}),
-	))
+	a.Window = a.App.NewWindow("Tunic Cipher")
 
 	// TODO: set main menu
+	a.Window.SetMainMenu(makeMenu(a.App))
 
 	a.Window.SetMaster()
 
 	content := container.NewStack()
-	title := widget.NewLabel("Welcome to Tunic Translator")
+	title := widget.NewLabel("Welcome to Tunic Cipher")
 
 	setView := func(t View) {
 		title.SetText(t.Title)
@@ -71,7 +64,7 @@ func (a *App) CreateWindow() {
 
 	// split screen with navigation
 	split := container.NewHSplit(makeNav(setView), view)
-	split.Offset = 0.2
+	split.Offset = 0.1
 	a.Window.SetContent(split)
 
 	// TODO: try to store the size in preferences
@@ -111,23 +104,31 @@ func makeNav(setView func(view View)) fyne.CanvasObject {
 		},
 	}
 
-	// TODO: move it to window menu
-	themes := container.NewGridWithColumns(2,
-		widget.NewButton("Dark", func() {
-			a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantDark})
-		}),
-		widget.NewButton("Light", func() {
-			a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantLight})
-		}),
-	)
-
 	// load saved view
 	currentPref := a.Preferences().StringWithFallback(preferenceCurrentView, "transcriptor") //TODO: change to welcome
 	tree.Select(currentPref)
 
-	return container.NewBorder(nil, themes, nil, nil, tree)
+	return container.NewBorder(nil, nil, nil, nil, tree)
 }
 
 func (a *App) Run() {
 	a.Window.ShowAndRun()
+}
+
+func makeMenu(a fyne.App) *fyne.MainMenu {
+	themeItem := fyne.NewMenuItem("Dark Theme", nil)
+	themeItem.Checked = a.Settings().ThemeVariant() == theme.VariantDark
+	file := fyne.NewMenu("File", themeItem)
+	main := fyne.NewMainMenu(file)
+	themeItem.Action = func() {
+		themeItem.Checked = !themeItem.Checked
+		if themeItem.Checked {
+			a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantDark})
+		} else {
+			a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantLight})
+		}
+		main.Refresh()
+	}
+
+	return main
 }

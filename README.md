@@ -14,16 +14,12 @@ The Tunic Cipher is a tool designed to assist individuals in translating the cus
 
 - **Cipher Tool**: Easily select glyphs and instantly see their translations in the custom language of Tunic.
 
-![transcriptor](resources/screenshots/translator.png)
+![transcriptor](resources/screenshots/transcriptor.png)
 
 - **Query Saving**: Save your translation queries to maintain your progress and easily resume your work.
 
-![query saving](resources/screenshots/saved_queries.png)
+![query saving](resources/screenshots/queries.png)
 
 - **Lexicon Tab**: Access a comprehensive lexicon tab that provides a complete list of glyphs and their corresponding phonemes.
 
 ![lexicon](resources/screenshots/lexicon.png)
-
-- **Dark Mode**: Switch between light and dark mode to suit your preferences.
-
-![dark mod](resources/screenshots/dark_mode.png)
