@@ -70,14 +70,14 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	clipboardCopyButton := widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
 		if len(currentQuery) == 0 {
 			fyne.CurrentApp().SendNotification(&fyne.Notification{
-				Title:   "Tunic Translator",
+				Title:   "Tunic Cipher",
 				Content: "Nothing to copy mate",
 			})
 			return
 		}
 		w.Clipboard().SetContent(currentQuery.String())
 		fyne.CurrentApp().SendNotification(&fyne.Notification{
-			Title:   "Tunic Translator",
+			Title:   "Tunic Cipher",
 			Content: "Text has been copied to clipboard!",
 		})
 	})
@@ -93,7 +93,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 		err := storage.SaveQuery("saved_queries.json", append([]alphabetItems{currentQuery}, savedQueries...))
 		if err != nil {
 			fyne.CurrentApp().SendNotification(&fyne.Notification{
-				Title:   "Tunic Translator",
+				Title:   "Tunic Cipher",
 				Content: "Failed to save: " + err.Error(),
 			})
 			return
@@ -182,7 +182,13 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 
 	deleteQueryFn := func(i int) {
 		savedQueries = append(savedQueries[:i], savedQueries[i+1:]...)
-		storage.SaveQuery("saved_queries.json", savedQueries)
+		err := storage.SaveQuery("saved_queries.json", savedQueries)
+		if err != nil {
+			fyne.CurrentApp().SendNotification(&fyne.Notification{
+				Title:   "Tunic Cipher",
+				Content: "Failed to delete: " + err.Error(),
+			})
+		}
 		// unfortunately, refreshing the current tab doesn't work as expected
 		// and since we're in the deleteQueryFn, we can't fall formatAlphabetGrid and pass the delete function.
 		// to manually refresh the tab, we need to select another tab and then reselect the current tab
@@ -237,7 +243,7 @@ func formatAlphabetGrid(w fyne.Window, itemBundles []alphabetItems, deleteFn fun
 				container.NewBorder(nil, nil, widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
 					w.Clipboard().SetContent(currentRunes.String())
 					fyne.CurrentApp().SendNotification(&fyne.Notification{
-						Title:   "Tunic Translator",
+						Title:   "Tunic Cipher",
 						Content: "Text has been copied to clipboard!",
 					})
 				}),

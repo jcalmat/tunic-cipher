@@ -34,8 +34,8 @@ func SaveQuery[T Saver[T]](filepath string, value []T) error {
 	if err != nil {
 		return errors.New("failed to save in storage")
 	}
-	save.Write([]byte(toSave))
-	return nil
+	_, err = save.Write([]byte(toSave))
+	return err
 }
 
 func LoadQuery[T Saver[T]](filepath string) ([]T, error) {

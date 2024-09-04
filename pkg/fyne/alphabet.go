@@ -84,14 +84,6 @@ var specialChars = []alphabetItem{
 	{ID: "44", Img: canvas.NewImageFromFile("resources/punctuation/question mark.png"), Type: Special, Rune: "?"},
 }
 
-func (as alphabetItems) ids() []string {
-	ret := make([]string, 0)
-	for _, a := range as {
-		ret = append(ret, a.ID)
-	}
-	return ret
-}
-
 func getAlphabetItems(ids []string) []alphabetItem {
 	ret := make([]alphabetItem, 0)
 
