@@ -226,5 +226,5 @@ func formatAlphabetGrid(itemBundles []alphabetItems) fyne.CanvasObject {
 
 	// warning: using container.NewGridWrap will not allow the user to resize the window
 	// smaller than the size of the grid
-	return container.NewVBox(objs...)
+	return container.NewVScroll(container.NewVBox(objs...))
 }

@@ -3,7 +3,6 @@ package storage
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"strings"
 
@@ -62,6 +61,5 @@ func LoadQuery[T Saver[T]](filepath string) ([]T, error) {
 		ret = append(ret, v.FromSave(line))
 	}
 
-	fmt.Printf("ret: %v\n", ret)
 	return ret, nil
 }
