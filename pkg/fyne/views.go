@@ -2,6 +2,7 @@ package fyne
 
 import (
 	"fmt"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -176,7 +177,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			container.NewPadded(gridLayout),
 		)),
 		container.NewTabItem("Queries",
-			container.NewBorder(formatAlphabetGrid([]alphabetItems{currentQuery}, nil, false), nil, nil, formatAlphabetGrid(savedQueries, nil, true))),
+			container.NewBorder(formatAlphabetGrid(w, []alphabetItems{currentQuery}, nil, false), nil, nil, formatAlphabetGrid(w, savedQueries, nil, true))),
 	)
 
 	deleteQueryFn := func(i int) {
@@ -192,13 +193,13 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	tabs.OnSelected = func(item *container.TabItem) {
 		if item.Text == "Queries" {
 			if len(currentQuery) == 0 {
-				item.Content = container.NewBorder(widget.NewLabel("Saved queries"), nil, nil, nil, formatAlphabetGrid(savedQueries, deleteQueryFn, true))
+				item.Content = container.NewBorder(widget.NewLabel("Saved queries"), nil, nil, nil, formatAlphabetGrid(w, savedQueries, deleteQueryFn, true))
 				return
 			}
 			item.Content = container.NewBorder(
-				container.NewBorder(widget.NewLabel("Current query"), nil, nil, nil, formatAlphabetGrid([]alphabetItems{currentQuery}, nil, false)),
+				container.NewBorder(widget.NewLabel("Current query"), nil, nil, nil, formatAlphabetGrid(w, []alphabetItems{currentQuery}, nil, false)),
 				nil, nil, nil,
-				container.NewBorder(widget.NewLabel("Saved queries"), nil, nil, nil, formatAlphabetGrid(savedQueries, deleteQueryFn, true)))
+				container.NewBorder(widget.NewLabel("Saved queries"), nil, nil, nil, formatAlphabetGrid(w, savedQueries, deleteQueryFn, true)))
 		}
 	}
 
@@ -214,24 +215,33 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 }
 
 func lexicon(w fyne.Window) fyne.CanvasObject {
-	return formatAlphabetGrid([]alphabetItems{vowels, consonants}, nil, true)
+	return formatAlphabetGrid(w, []alphabetItems{vowels, consonants}, nil, true)
 }
 
-func formatAlphabetGrid(itemBundles []alphabetItems, deleteFn func(i int), scroll bool) fyne.CanvasObject {
+func formatAlphabetGrid(w fyne.Window, itemBundles []alphabetItems, deleteFn func(i int), scroll bool) fyne.CanvasObject {
 	objs := make([]fyne.CanvasObject, len(itemBundles))
 	for i, bundle := range itemBundles {
 		bundle := bundle
 		currentGrid := make([]fyne.CanvasObject, len(bundle))
+		currentRunes := strings.Builder{}
 		for j, item := range bundle {
 			item := item
 			text := widget.NewLabel(item.Rune)
 			text.Alignment = fyne.TextAlignCenter
 			newImg := canvas.NewImageFromImage(item.Img.Image)
 			currentGrid[j] = container.NewBorder(nil, text, nil, nil, newImg)
+			currentRunes.WriteString(item.Rune)
 		}
 		if deleteFn != nil {
 			objs[i] = container.NewBorder(nil, nil, nil,
-				widget.NewButtonWithIcon("", theme.DeleteIcon(), func() { deleteFn(i) }),
+				container.NewBorder(nil, nil, widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
+					w.Clipboard().SetContent(currentRunes.String())
+					fyne.CurrentApp().SendNotification(&fyne.Notification{
+						Title:   "Tunic Translator",
+						Content: "Text has been copied to clipboard!",
+					})
+				}),
+					widget.NewButtonWithIcon("", theme.DeleteIcon(), func() { deleteFn(i) })),
 				container.NewGridWrap(fyne.NewSize(75, 120), currentGrid...))
 		} else {
 			objs[i] = container.NewGridWrap(fyne.NewSize(75, 120), currentGrid...)
