@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-
 	// setup logger
 	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
 

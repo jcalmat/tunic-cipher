@@ -21,11 +21,6 @@ type View struct {
 var (
 	// Views defines the metadata for each view
 	Views = map[string]View{
-		// "welcome": {"Welcome", "", welcomeScreen},
-		// "canvas": {"Canvas",
-		// 	"See the canvas capabilities.",
-		// 	canvasScreen,
-		// },
 		"transcriptor": {"Transcriptor",
 			"Transcript Tunic text to phonemes.",
 			transcript,
@@ -94,7 +89,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 		if len(currentQuery) == 0 {
 			return
 		}
-		err := storage.SaveQuery[alphabetItems]("saved_queries.json", append([]alphabetItems{currentQuery}, savedQueries...))
+		err := storage.SaveQuery("saved_queries.json", append([]alphabetItems{currentQuery}, savedQueries...))
 		if err != nil {
 			fyne.CurrentApp().SendNotification(&fyne.Notification{
 				Title:   "Tunic Translator",
@@ -102,7 +97,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			})
 			return
 		}
-		savedQueries = append(savedQueries, currentQuery)
+		savedQueries = append([]alphabetItems{currentQuery}, savedQueries...)
 	})
 
 	// position the buttons at the right of the window
@@ -180,16 +175,30 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			nil,
 			container.NewPadded(gridLayout),
 		)),
-		container.NewTabItem("Saved queries", formatAlphabetGrid(append([]alphabetItems{currentQuery}, savedQueries...))),
+		container.NewTabItem("Queries",
+			container.NewBorder(formatAlphabetGrid([]alphabetItems{currentQuery}, nil, false), nil, nil, formatAlphabetGrid(savedQueries, nil, true))),
 	)
 
+	deleteQueryFn := func(i int) {
+		savedQueries = append(savedQueries[:i], savedQueries[i+1:]...)
+		storage.SaveQuery("saved_queries.json", savedQueries)
+		// unfortunately, refreshing the current tab doesn't work as expected
+		// and since we're in the deleteQueryFn, we can't fall formatAlphabetGrid and pass the delete function.
+		// to manually refresh the tab, we need to select another tab and then reselect the current tab
+		tabs.SelectIndex(0)
+		tabs.SelectIndex(1)
+	}
+
 	tabs.OnSelected = func(item *container.TabItem) {
-		if item.Text == "Saved queries" {
+		if item.Text == "Queries" {
 			if len(currentQuery) == 0 {
-				item.Content = formatAlphabetGrid(savedQueries)
+				item.Content = container.NewBorder(widget.NewLabel("Saved queries"), nil, nil, nil, formatAlphabetGrid(savedQueries, deleteQueryFn, true))
 				return
 			}
-			item.Content = formatAlphabetGrid(append([]alphabetItems{currentQuery}, savedQueries...))
+			item.Content = container.NewBorder(
+				container.NewBorder(widget.NewLabel("Current query"), nil, nil, nil, formatAlphabetGrid([]alphabetItems{currentQuery}, nil, false)),
+				nil, nil, nil,
+				container.NewBorder(widget.NewLabel("Saved queries"), nil, nil, nil, formatAlphabetGrid(savedQueries, deleteQueryFn, true)))
 		}
 	}
 
@@ -205,10 +214,10 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 }
 
 func lexicon(w fyne.Window) fyne.CanvasObject {
-	return formatAlphabetGrid([]alphabetItems{vowels, consonants})
+	return formatAlphabetGrid([]alphabetItems{vowels, consonants}, nil, true)
 }
 
-func formatAlphabetGrid(itemBundles []alphabetItems) fyne.CanvasObject {
+func formatAlphabetGrid(itemBundles []alphabetItems, deleteFn func(i int), scroll bool) fyne.CanvasObject {
 	objs := make([]fyne.CanvasObject, len(itemBundles))
 	for i, bundle := range itemBundles {
 		bundle := bundle
@@ -219,12 +228,21 @@ func formatAlphabetGrid(itemBundles []alphabetItems) fyne.CanvasObject {
 			text.Alignment = fyne.TextAlignCenter
 			newImg := canvas.NewImageFromImage(item.Img.Image)
 			currentGrid[j] = container.NewBorder(nil, text, nil, nil, newImg)
-			_ = item
 		}
-		objs[i] = container.NewGridWrap(fyne.NewSize(75, 120), currentGrid...)
+		if deleteFn != nil {
+			objs[i] = container.NewBorder(nil, nil, nil,
+				widget.NewButtonWithIcon("", theme.DeleteIcon(), func() { deleteFn(i) }),
+				container.NewGridWrap(fyne.NewSize(75, 120), currentGrid...))
+		} else {
+			objs[i] = container.NewGridWrap(fyne.NewSize(75, 120), currentGrid...)
+		}
 	}
 
 	// warning: using container.NewGridWrap will not allow the user to resize the window
 	// smaller than the size of the grid
-	return container.NewVScroll(container.NewVBox(objs...))
+	if scroll {
+		return container.NewVScroll(container.NewVBox(objs...))
+	}
+
+	return container.NewVBox(objs...)
 }
