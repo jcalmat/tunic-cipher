@@ -1,4 +1,4 @@
-module github.com/jcalmat/tunic
+module github.com/jcalmat/tunic-cipher
 
 go 1.22.2
 

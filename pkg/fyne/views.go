@@ -9,7 +9,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/jcalmat/tunic/pkg/fyne/storage"
+	"github.com/jcalmat/tunic-cipher/pkg/fyne/storage"
 )
 
 // View defines the data structure for a view

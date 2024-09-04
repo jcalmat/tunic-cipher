@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jcalmat/tunic/pkg/fyne"
+	"github.com/jcalmat/tunic-cipher/pkg/fyne"
 	"github.com/rs/zerolog"
 )
 

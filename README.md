@@ -1,4 +1,4 @@
-# Tunic Translator
+# Tunic Cipher
 
 ## Preamble
 
@@ -8,11 +8,11 @@ Warning: This tool contains **HEAVY** spoilers for the game. If you haven't play
 
 ## Introduction
 
-The Tunic Translator is a tool designed to assist individuals in translating the custom language created for the game Tunic. It provides a user-friendly interface for selecting glyphs and instantly seeing their translations. Additionally, the tool allows users to save their queries, enabling them to easily resume their translation work between sessions.
+The Tunic Cipher is a tool designed to assist individuals in translating the custom language created for the game Tunic. It provides a user-friendly interface for selecting glyphs and instantly seeing their translations. Additionally, the tool allows users to save their queries, enabling them to easily resume their translation work between sessions.
 
 ## Features
 
-- **Transcriptor Tool**: Easily select glyphs and instantly see their translations in the custom language of Tunic.
+- **Cipher Tool**: Easily select glyphs and instantly see their translations in the custom language of Tunic.
 
 ![transcriptor](resources/screenshots/translator.png)
 
