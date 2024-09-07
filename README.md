@@ -22,6 +22,7 @@ The Tunic Cipher is a tool designed to assist individuals in translating the cus
 
 ![query saving](resources/readme/queries.png)
 
-- **Lexicon Tab**: Access a comprehensive lexicon tab that provides a complete list of glyphs and their corresponding phonemes.
+- **Lexicon Tab**: Access a comprehensive lexicon tab that provides a complete list of glyphs and their corresponding phonemes. The phonemes are editable, allowing users to customize the translations to their liking.
 
 ![lexicon](resources/readme/lexicon.png)
+![lexicon2](resources/readme/lexicon2.png)
