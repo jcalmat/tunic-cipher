@@ -1,10 +1,11 @@
 package fyne
 
 import (
-	"strings"
+	"encoding/json"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"github.com/jcalmat/tunic-cipher/pkg/fyne/storage"
 )
 
 type alphabetItemType int
@@ -86,35 +87,98 @@ var specialChars = []alphabetItem{
 	{ID: "44", Img: canvas.NewImageFromResource(resourceQuestionMarkPng), Resource: resourceQuestionMarkPng, Type: Special, Rune: "?"},
 }
 
-func getAlphabetItems(ids []string) []alphabetItem {
-	ret := make([]alphabetItem, 0)
+// defaultAlphabet returns the default alphabet
+func defaultAlphabet() []alphabetItems {
+	return []alphabetItems{defaultVowels, defaultConsonants}
+}
 
-	all := append(defaultVowels, append(defaultConsonants, specialChars...)...)
+// currentAlphabet returns the current alphabet loaded in the application.
+// if no alphabet is loaded, it returns the default one
+func currentAlphabet() alphabetItems {
+	all, err := storage.Load[alphabetItems]("alphabet.tnc")
+	if err != nil {
+		all = defaultAlphabet()
+	}
 
-	// worst code ever, put some protection glasses on
-	for _, id := range ids {
-		for _, a := range all {
-			if a.ID == id {
-				ret = append(ret, a)
-				break
-			}
+	ret := make(alphabetItems, 0)
+	for _, item := range all {
+		ret = append(ret, item...)
+	}
+	return ret
+}
+
+// Normalize updates the items with the runes and images from the alphabet
+func (a alphabetItems) Normalize(items []alphabetItems) []alphabetItems {
+	amap := make(map[string]alphabetItem)
+	for _, item := range a {
+		amap[item.ID] = item
+	}
+
+	for i, bundle := range items {
+		for j, item := range bundle {
+			item.Rune = amap[item.ID].Rune
+			item.Img = amap[item.ID].Img
+			item.Resource = amap[item.ID].Resource
+			item.Type = amap[item.ID].Type
+			items[i][j] = item
+		}
+	}
+
+	return items
+}
+
+// ByType returns the items of the given type
+func (a alphabetItems) ByType(t alphabetItemType) alphabetItems {
+	ret := make(alphabetItems, 0)
+	for _, item := range a {
+		if item.Type == t {
+			ret = append(ret, item)
 		}
 	}
 	return ret
 }
 
+// Update updates the rune of the item with the given ID
+func (a alphabetItems) Update(id string, rune string) {
+	for i, item := range a {
+		if item.ID == id {
+			a[i].Rune = rune
+			return
+		}
+	}
+}
+
 // ToSave implements the Saver interface
 func (a alphabetItems) ToSave() string {
-	ret := strings.Builder{}
-	for _, item := range a {
-		ret.WriteString(item.ID)
-		ret.WriteString(" ")
+	b, err := json.Marshal(a)
+	if err != nil {
+		return ""
 	}
-	return ret.String()
+
+	return string(b)
 }
 
 // FromSave implements the Saver interface
 func (a alphabetItems) FromSave(s string) alphabetItems {
-	ids := strings.Split(s, " ")
-	return getAlphabetItems(ids)
+	items := make(alphabetItems, 0)
+	err := json.Unmarshal([]byte(s), &items)
+	if err != nil {
+		return nil
+	}
+
+	if len(items) == 0 {
+		return nil
+	}
+
+	alphabetMap := make(map[string]alphabetItem)
+	for _, item := range append(defaultVowels, defaultConsonants...) {
+		alphabetMap[item.ID] = item
+	}
+
+	for i := range items {
+		items[i].Img = alphabetMap[items[i].ID].Img
+		items[i].Resource = alphabetMap[items[i].ID].Resource
+	}
+
+	return items
 }

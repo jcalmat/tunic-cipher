@@ -38,7 +38,7 @@ func (a *App) CreateWindow() {
 	title := widget.NewLabel("Welcome to Tunic Cipher")
 
 	setView := func(t View) {
-		title.SetText(t.Title)
+		title.SetText(t.Intro)
 
 		content.Objects = []fyne.CanvasObject{t.View(a.Window)}
 		content.Refresh()

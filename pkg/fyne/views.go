@@ -14,11 +14,11 @@ var (
 	// Views defines the metadata for each view
 	Views = map[string]View{
 		"transcriptor": {"Transcriptor",
-			"Transcript Tunic text to phonemes.",
+			"Transcriptor",
 			transcript,
 		},
 		"lexicon": {"Lexicon",
-			"List of all symbols with their individual corresponding phoneme.",
+			"Lexicon\n\nClick on a phoneme to update it",
 			lexicon,
 		},
 	}
