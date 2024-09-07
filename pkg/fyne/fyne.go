@@ -4,8 +4,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/driver/desktop"
-	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/rs/zerolog"
 )
@@ -26,26 +24,12 @@ func New(logger *zerolog.Logger) App {
 		App:    app.NewWithID("tunic_transcriptor"),
 	}
 }
-func (a *App) MakeTray() {
-	logger := a.Logger.With().Str("method", "MakeTray").Logger()
-
-	if desk, ok := a.App.(desktop.App); ok {
-		h := fyne.NewMenuItem("Hello", func() {})
-		h.Icon = theme.HomeIcon()
-		menu := fyne.NewMenu("Hello World", h)
-		h.Action = func() {
-			logger.Debug().Msg("System tray menu tapped")
-			h.Label = "Welcome"
-			menu.Refresh()
-		}
-		desk.SetSystemTrayMenu(menu)
-	}
-}
 
 func (a *App) CreateWindow() {
 	a.Window = a.App.NewWindow("Tunic Cipher")
 
-	// TODO: set main menu
+	a.Window.SetIcon(resourceLogoPng)
+
 	a.Window.SetMainMenu(makeMenu(a.App))
 
 	a.Window.SetMaster()
@@ -113,22 +97,4 @@ func makeNav(setView func(view View)) fyne.CanvasObject {
 
 func (a *App) Run() {
 	a.Window.ShowAndRun()
-}
-
-func makeMenu(a fyne.App) *fyne.MainMenu {
-	themeItem := fyne.NewMenuItem("Dark Theme", nil)
-	themeItem.Checked = a.Settings().ThemeVariant() == theme.VariantDark
-	file := fyne.NewMenu("File", themeItem)
-	main := fyne.NewMainMenu(file)
-	themeItem.Action = func() {
-		themeItem.Checked = !themeItem.Checked
-		if themeItem.Checked {
-			a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantDark})
-		} else {
-			a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantLight})
-		}
-		main.Refresh()
-	}
-
-	return main
 }

@@ -13,7 +13,6 @@ func main() {
 
 	fyneApp := fyne.New(&logger)
 
-	fyneApp.MakeTray()
 	fyneApp.CreateWindow()
 	fyneApp.Run()
 }

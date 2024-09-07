@@ -15,7 +15,7 @@ type Saver[T any] interface {
 	FromSave(string) T
 }
 
-func SaveQuery[T Saver[T]](filepath string, value []T) error {
+func Save[T Saver[T]](filepath string, value []T) error {
 	var toSave string
 	for _, v := range value {
 		toSave += v.ToSave() + "\n"
@@ -38,12 +38,12 @@ func SaveQuery[T Saver[T]](filepath string, value []T) error {
 	return err
 }
 
-func LoadQuery[T Saver[T]](filepath string) ([]T, error) {
+func Load[T Saver[T]](filepath string) ([]T, error) {
 	ret := make([]T, 0)
 
 	load, err := fyne.CurrentApp().Storage().Open(filepath)
 	if err != nil {
-		return ret, errors.New("failed to open file")
+		return ret, ErrNotFound
 	}
 	defer load.Close()
 

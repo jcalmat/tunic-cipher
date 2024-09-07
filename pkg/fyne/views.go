@@ -1,6 +1,7 @@
 package fyne
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -48,9 +49,11 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	currentQuery := make(alphabetItems, 0)
 
 	// load saved queries
-	savedQueries, err := storage.LoadQuery[alphabetItems]("saved_queries.json")
+	savedQueries, err := storage.Load[alphabetItems]("saved_queries.json")
 	if err != nil {
-		fmt.Printf("failed to load saved queries: %v\n", err)
+		if !errors.Is(err, storage.ErrNotFound) {
+			fmt.Printf("failed to load saved queries: %v\n", err)
+		}
 	}
 
 	// init delete button
@@ -90,7 +93,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 		if len(currentQuery) == 0 {
 			return
 		}
-		err := storage.SaveQuery("saved_queries.json", append([]alphabetItems{currentQuery}, savedQueries...))
+		err := storage.Save("saved_queries.json", append([]alphabetItems{currentQuery}, savedQueries...))
 		if err != nil {
 			fyne.CurrentApp().SendNotification(&fyne.Notification{
 				Title:   "Tunic Cipher",
@@ -107,36 +110,36 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	// # Handle letters grids
 	vowelsGrid := widget.NewGridWrap(
 		func() int {
-			return len(vowels)
+			return len(defaultVowels)
 		},
 		func() fyne.CanvasObject {
 			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("resources/alphabet/1.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[0] = vowels[id].Img
+			item.(*fyne.Container).Objects[0] = defaultVowels[id].Img
 		},
 	)
 	vowelsGrid.OnSelected = func(id widget.ListItemID) {
 		// when an item is selected, update the sidepanel
-		currentQuery = append(currentQuery, vowels[id])
+		currentQuery = append(currentQuery, defaultVowels[id])
 		outputEntry.SetText(currentQuery.String())
 		vowelsGrid.Unselect(id)
 	}
 
 	consonantsGrid := widget.NewGridWrap(
 		func() int {
-			return len(consonants)
+			return len(defaultConsonants)
 		},
 		func() fyne.CanvasObject {
 			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("resources/alphabet/20.png"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[0] = consonants[id].Img
+			item.(*fyne.Container).Objects[0] = defaultConsonants[id].Img
 		},
 	)
 	consonantsGrid.OnSelected = func(id widget.ListItemID) {
 		// when an item is selected, update the sidepanel
-		currentQuery = append(currentQuery, consonants[id])
+		currentQuery = append(currentQuery, defaultConsonants[id])
 		outputEntry.SetText(currentQuery.String())
 		consonantsGrid.Unselect(id)
 	}
@@ -182,7 +185,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 
 	deleteQueryFn := func(i int) {
 		savedQueries = append(savedQueries[:i], savedQueries[i+1:]...)
-		err := storage.SaveQuery("saved_queries.json", savedQueries)
+		err := storage.Save("saved_queries.json", savedQueries)
 		if err != nil {
 			fyne.CurrentApp().SendNotification(&fyne.Notification{
 				Title:   "Tunic Cipher",
@@ -221,7 +224,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 }
 
 func lexicon(w fyne.Window) fyne.CanvasObject {
-	return formatAlphabetGrid(w, []alphabetItems{vowels, consonants}, nil, true)
+	return formatAlphabetGrid(w, []alphabetItems{defaultVowels, defaultConsonants}, nil, true)
 }
 
 func formatAlphabetGrid(w fyne.Window, itemBundles []alphabetItems, deleteFn func(i int), scroll bool) fyne.CanvasObject {

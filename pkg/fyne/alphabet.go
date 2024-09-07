@@ -16,7 +16,7 @@ const (
 
 type alphabetItem struct {
 	ID   string           `json:"id"`
-	Img  *canvas.Image    `json:"img"`
+	Img  *canvas.Image    `json:"-"`
 	Rune string           `json:"rune"`
 	Type alphabetItemType `json:"type"`
 }
@@ -31,7 +31,7 @@ func (a alphabetItems) String() string {
 	return s
 }
 
-var vowels = []alphabetItem{
+var defaultVowels = []alphabetItem{
 	{ID: "0", Img: canvas.NewImageFromResource(resource1Png), Type: Vowel, Rune: "ɔː"},
 	{ID: "1", Img: canvas.NewImageFromResource(resource2Png), Type: Vowel, Rune: "ɑː"},
 	{ID: "2", Img: canvas.NewImageFromResource(resource3Png), Type: Vowel, Rune: "ɪ"},
@@ -51,7 +51,7 @@ var vowels = []alphabetItem{
 	{ID: "16", Img: canvas.NewImageFromResource(resource17Png), Type: Vowel, Rune: "əʊ"},
 	{ID: "17", Img: canvas.NewImageFromResource(resource18Png), Type: Vowel, Rune: "eə"},
 }
-var consonants = []alphabetItem{
+var defaultConsonants = []alphabetItem{
 	{ID: "18", Img: canvas.NewImageFromResource(resource19Png), Type: Consonant, Rune: "m"},
 	{ID: "19", Img: canvas.NewImageFromResource(resource20Png), Type: Consonant, Rune: "n"},
 	{ID: "20", Img: canvas.NewImageFromResource(resource21Png), Type: Consonant, Rune: "ŋ"},
@@ -87,7 +87,7 @@ var specialChars = []alphabetItem{
 func getAlphabetItems(ids []string) []alphabetItem {
 	ret := make([]alphabetItem, 0)
 
-	all := append(vowels, append(consonants, specialChars...)...)
+	all := append(defaultVowels, append(defaultConsonants, specialChars...)...)
 
 	// worst code ever, put some protection glasses on
 	for _, id := range ids {
@@ -101,6 +101,7 @@ func getAlphabetItems(ids []string) []alphabetItem {
 	return ret
 }
 
+// ToSave implements the Saver interface
 func (a alphabetItems) ToSave() string {
 	ret := strings.Builder{}
 	for _, item := range a {
@@ -110,6 +111,7 @@ func (a alphabetItems) ToSave() string {
 	return ret.String()
 }
 
+// FromSave implements the Saver interface
 func (a alphabetItems) FromSave(s string) alphabetItems {
 	ids := strings.Split(s, " ")
 	return getAlphabetItems(ids)

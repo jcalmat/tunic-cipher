@@ -1,5 +1,7 @@
 # Tunic Cipher
 
+![Tunic Cipher](resources/readme/logo.png)
+
 ## Preamble
 
 This project provides a tool for translating the custom language created for the game _Tunic_.
@@ -14,12 +16,12 @@ The Tunic Cipher is a tool designed to assist individuals in translating the cus
 
 - **Cipher Tool**: Easily select glyphs and instantly see their translations in the custom language of Tunic.
 
-![transcriptor](resources/screenshots/transcriptor.png)
+![transcriptor](resources/readme/transcriptor.png)
 
 - **Query Saving**: Save your translation queries to maintain your progress and easily resume your work.
 
-![query saving](resources/screenshots/queries.png)
+![query saving](resources/readme/queries.png)
 
 - **Lexicon Tab**: Access a comprehensive lexicon tab that provides a complete list of glyphs and their corresponding phonemes.
 
-![lexicon](resources/screenshots/lexicon.png)
+![lexicon](resources/readme/lexicon.png)
