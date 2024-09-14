@@ -150,7 +150,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	)
 
 	tabs := container.NewAppTabs(
-		container.NewTabItem("Glyphes", container.NewBorder(
+		container.NewTabItem("Glyphs", container.NewBorder(
 			nil,
 			container.NewPadded(
 				layout.NewSpacer(),

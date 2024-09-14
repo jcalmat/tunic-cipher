@@ -13,6 +13,10 @@ type View struct {
 var (
 	// Views defines the metadata for each view
 	Views = map[string]View{
+		"howToUse": {"Tunic Cipher",
+			"How To Use",
+			howToUse,
+		},
 		"transcriptor": {"Transcriptor",
 			"Transcriptor",
 			transcript,
@@ -25,6 +29,6 @@ var (
 
 	// ViewIndex  defines how our views should be laid out in the index tree
 	ViewIndex = map[string][]string{
-		"": {"transcriptor", "lexicon"},
+		"": {"howToUse", "transcriptor", "lexicon"},
 	}
 )
