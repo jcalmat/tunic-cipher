@@ -2,7 +2,7 @@ package fyne
 
 const (
 	preferenceCurrentView = "currentView"
-	preferenceTheme       = "theme"
+	preferenceDarkTheme   = "theme"
 	preferenceHeight      = "height"
 	preferenceWidth       = "width"
 )

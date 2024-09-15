@@ -35,16 +35,16 @@ func (a *App) CreateWindow() {
 	a.Window.SetMaster()
 
 	content := container.NewStack()
-	title := widget.NewLabel("Welcome to Tunic Cipher")
+	intro := widget.NewLabel("Welcome to Tunic Cipher")
 
 	setView := func(t View) {
-		title.SetText(t.Intro)
+		intro.SetText(t.Intro)
 
 		content.Objects = []fyne.CanvasObject{t.View(a.Window)}
 		content.Refresh()
 	}
 
-	view := container.NewBorder(container.NewVBox(title, widget.NewSeparator()), nil, nil, nil, content)
+	view := container.NewBorder(container.NewVBox(intro, widget.NewSeparator()), nil, nil, nil, content)
 
 	// split screen with navigation
 	split := container.NewHSplit(makeNav(setView), view)

@@ -37,14 +37,14 @@ The Tunic language is written from left to right, with each glyph representing a
 
 	img1 := canvas.NewImageFromResource(resourceTunictextexamplePng)
 	img1.FillMode = canvas.ImageFillContain
-	img1.SetMinSize(fyne.NewSize(350, 350))
+	img1.SetMinSize(fyne.NewSize(450, 450))
 
 	text2 := widget.NewRichTextFromMarkdown(`Each glyph is composed of two distinct elements: the consonant and the vowel. The consonant is depicted by the outer part of the glyph, while the vowel is represented by the inner part. When reading a glyph, start from the outside with the consonant, and move inward to the vowel.`)
 	text2.Wrapping = fyne.TextWrapWord
 
 	img2 := canvas.NewImageFromResource(resourceTunictextexampleoutsideinsidePng)
 	img2.FillMode = canvas.ImageFillContain
-	img2.SetMinSize(fyne.NewSize(350, 350))
+	img2.SetMinSize(fyne.NewSize(450, 450))
 
 	text3 := widget.NewRichTextFromMarkdown("As you've seen, some glyphs have a horizontal line through the middle. This line is purely decorative and does not alter the reading of the glyph.")
 	text3.Wrapping = fyne.TextWrapWord
@@ -74,14 +74,14 @@ The **Transcriptor** is the main feature of the Tunic Cipher tool, where you can
 
 	img5 := canvas.NewImageFromResource(resourceTranscriptorPng)
 	img5.FillMode = canvas.ImageFillContain
-	img5.SetMinSize(fyne.NewSize(350, 350))
+	img5.SetMinSize(fyne.NewSize(450, 450))
 
 	text6 := widget.NewRichTextFromMarkdown("- **Queries Tab**: This tab allows you to manage saved queries, alongside your current transcription query.")
 	text6.Wrapping = fyne.TextWrapWord
 
 	img6 := canvas.NewImageFromResource(resourceQueriesPng)
 	img6.FillMode = canvas.ImageFillContain
-	img6.SetMinSize(fyne.NewSize(350, 350))
+	img6.SetMinSize(fyne.NewSize(450, 450))
 
 	text7 := widget.NewRichTextFromMarkdown(`
 <br/><br/><br/><br/><br/><br/><br/><br/>
@@ -92,7 +92,7 @@ The **Lexicon** view contains a comprehensive list of all the glyphs in the Tuni
 
 	img7 := canvas.NewImageFromResource(resourceLexiconPng)
 	img7.FillMode = canvas.ImageFillContain
-	img7.SetMinSize(fyne.NewSize(350, 350))
+	img7.SetMinSize(fyne.NewSize(450, 450))
 
 	content := container.NewVBox(
 		widget.NewLabelWithStyle("\n\nWelcome to the Tunic (de)Cipher tool!", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),

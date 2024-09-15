@@ -7,7 +7,16 @@ import (
 
 func makeMenu(a fyne.App) *fyne.MainMenu {
 	themeItem := fyne.NewMenuItem("Dark Theme", nil)
-	themeItem.Checked = a.Settings().ThemeVariant() == theme.VariantDark
+
+	// load theme
+	isDarkTheme := a.Preferences().BoolWithFallback(preferenceDarkTheme, false)
+	if isDarkTheme {
+		a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantDark})
+	} else {
+		a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantLight})
+	}
+
+	themeItem.Checked = isDarkTheme
 	file := fyne.NewMenu("File", themeItem)
 	main := fyne.NewMainMenu(file)
 	themeItem.Action = func() {
@@ -17,6 +26,8 @@ func makeMenu(a fyne.App) *fyne.MainMenu {
 		} else {
 			a.Settings().SetTheme(&forcedVariant{Theme: theme.DefaultTheme(), variant: theme.VariantLight})
 		}
+		// store the theme preference
+		a.Preferences().SetBool(preferenceDarkTheme, themeItem.Checked)
 		main.Refresh()
 	}
 
