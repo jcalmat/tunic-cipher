@@ -17,7 +17,7 @@ import (
 func lexicon(w fyne.Window) fyne.CanvasObject {
 	alphabet, err := storage.Load[alphabetItems]("alphabet.tnc")
 	if err != nil {
-		alphabet = defaultAlphabet()
+		alphabet = emptyAlphabet()
 	}
 
 	objs := make([]fyne.CanvasObject, len(alphabet))
@@ -69,9 +69,27 @@ func lexicon(w fyne.Window) fyne.CanvasObject {
 		dialog.ShowConfirm("Reset to default", "Are you sure you want to reset the alphabet to the default one?", func(b bool) {
 			if b {
 				// reset the alphabet to the default one
-				storage.Save("alphabet.tnc", defaultAlphabet())
+				storage.Save("alphabet.tnc", emptyAlphabet())
 				// refresh the text of the labels
-				for i, bundle := range defaultAlphabet() {
+				for i, bundle := range emptyAlphabet() {
+					for j, item := range bundle {
+						objs[i].(*fyne.Container).Objects[j].(*fyne.Container).Objects[1].(*widget.Label).SetText(item.Rune)
+						objs[i].(*fyne.Container).Objects[j].(*fyne.Container).Refresh()
+
+					}
+				}
+			}
+		}, w)
+	})
+
+	loadFinalAlphabetBtn := widget.NewButtonWithIcon("Load solution", theme.UploadIcon(), func() {
+		// ask for confirmation
+		dialog.ShowConfirm("Load solution", "Are you sure you want to load the final solution? It might spoil you!", func(b bool) {
+			if b {
+				// reset the alphabet to the default one
+				storage.Save("alphabet.tnc", definitiveAlphabet())
+				// refresh the text of the labels
+				for i, bundle := range definitiveAlphabet() {
 					for j, item := range bundle {
 						objs[i].(*fyne.Container).Objects[j].(*fyne.Container).Objects[1].(*widget.Label).SetText(item.Rune)
 						objs[i].(*fyne.Container).Objects[j].(*fyne.Container).Refresh()
@@ -81,5 +99,5 @@ func lexicon(w fyne.Window) fyne.CanvasObject {
 		}, w)
 	})
 
-	return container.NewBorder(nil, container.NewBorder(nil, nil, nil, resetBtn), nil, nil, container.NewVScroll(container.NewVBox(objs...)))
+	return container.NewBorder(nil, container.NewBorder(nil, nil, nil, container.NewBorder(nil, nil, loadFinalAlphabetBtn, resetBtn)), nil, nil, container.NewVScroll(container.NewVBox(objs...)))
 }

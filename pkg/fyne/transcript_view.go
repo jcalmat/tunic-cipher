@@ -93,7 +93,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(vowels)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("resources/alphabet/1.png"))
+			return container.NewGridWrap(fyne.NewSize(100, 110), &canvas.Image{})
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = vowels[id].Img
@@ -112,7 +112,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(consonants)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(100, 110), canvas.NewImageFromFile("resources/alphabet/20.png"))
+			return container.NewGridWrap(fyne.NewSize(100, 110), &canvas.Image{})
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = consonants[id].Img
@@ -120,7 +120,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 	)
 	consonantsGrid.OnSelected = func(id widget.ListItemID) {
 		// when an item is selected, update the sidepanel
-		currentQuery = append(currentQuery, defaultConsonants[id])
+		currentQuery = append(currentQuery, consonants[id])
 		outputEntry.SetText(currentQuery.String())
 		consonantsGrid.Unselect(id)
 	}
@@ -130,7 +130,7 @@ func transcript(w fyne.Window) fyne.CanvasObject {
 			return len(specialChars)
 		},
 		func() fyne.CanvasObject {
-			return container.NewGridWrap(fyne.NewSize(75, 75), canvas.NewImageFromFile("resources/alphabet/1.png"))
+			return container.NewGridWrap(fyne.NewSize(75, 75), &canvas.Image{})
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			item.(*fyne.Container).Objects[0] = specialChars[id].Img

@@ -34,27 +34,27 @@ func (a alphabetItems) String() string {
 	return s
 }
 
-var defaultVowels = []alphabetItem{
-	{ID: "0", Img: canvas.NewImageFromResource(resource1Png), Resource: resource1Png, Type: Vowel, Rune: "ɔː"},
+var definitiveVowels = []alphabetItem{
+	{ID: "0", Img: canvas.NewImageFromResource(resource1Png), Resource: resource1Png, Type: Vowel, Rune: "æ"},
 	{ID: "1", Img: canvas.NewImageFromResource(resource2Png), Resource: resource2Png, Type: Vowel, Rune: "ɑː"},
 	{ID: "2", Img: canvas.NewImageFromResource(resource3Png), Resource: resource3Png, Type: Vowel, Rune: "ɪ"},
-	{ID: "3", Img: canvas.NewImageFromResource(resource4Png), Resource: resource4Png, Type: Vowel, Rune: "e"},
+	{ID: "3", Img: canvas.NewImageFromResource(resource4Png), Resource: resource4Png, Type: Vowel, Rune: "ɛ"},
 	{ID: "4", Img: canvas.NewImageFromResource(resource5Png), Resource: resource5Png, Type: Vowel, Rune: "ʊ"},
 	{ID: "5", Img: canvas.NewImageFromResource(resource6Png), Resource: resource6Png, Type: Vowel, Rune: "ʌ"},
 	{ID: "6", Img: canvas.NewImageFromResource(resource7Png), Resource: resource7Png, Type: Vowel, Rune: "i:"},
 	{ID: "7", Img: canvas.NewImageFromResource(resource8Png), Resource: resource8Png, Type: Vowel, Rune: "uː"},
-	{ID: "8", Img: canvas.NewImageFromResource(resource9Png), Resource: resource9Png, Type: Vowel, Rune: "ə"},
-	{ID: "9", Img: canvas.NewImageFromResource(resource10Png), Resource: resource10Png, Type: Vowel, Rune: "ɔː"},
-	{ID: "10", Img: canvas.NewImageFromResource(resource11Png), Resource: resource11Png, Type: Vowel, Rune: "ɑː"},
-	{ID: "11", Img: canvas.NewImageFromResource(resource12Png), Resource: resource12Png, Type: Vowel, Rune: "ɪə"},
+	{ID: "8", Img: canvas.NewImageFromResource(resource9Png), Resource: resource9Png, Type: Vowel, Rune: "ər"},
+	{ID: "9", Img: canvas.NewImageFromResource(resource10Png), Resource: resource10Png, Type: Vowel, Rune: "ɔːr"},
+	{ID: "10", Img: canvas.NewImageFromResource(resource11Png), Resource: resource11Png, Type: Vowel, Rune: "ɑːr"},
+	{ID: "11", Img: canvas.NewImageFromResource(resource12Png), Resource: resource12Png, Type: Vowel, Rune: "ɪər"},
 	{ID: "12", Img: canvas.NewImageFromResource(resource13Png), Resource: resource13Png, Type: Vowel, Rune: "eɪ"},
 	{ID: "13", Img: canvas.NewImageFromResource(resource14Png), Resource: resource14Png, Type: Vowel, Rune: "aɪ"},
-	{ID: "14", Img: canvas.NewImageFromResource(resource15Png), Resource: resource15Png, Type: Vowel, Rune: "?"},
+	{ID: "14", Img: canvas.NewImageFromResource(resource15Png), Resource: resource15Png, Type: Vowel, Rune: "ɔɪ"},
 	{ID: "15", Img: canvas.NewImageFromResource(resource16Png), Resource: resource16Png, Type: Vowel, Rune: "aʊ"},
-	{ID: "16", Img: canvas.NewImageFromResource(resource17Png), Resource: resource17Png, Type: Vowel, Rune: "əʊ"},
-	{ID: "17", Img: canvas.NewImageFromResource(resource18Png), Resource: resource18Png, Type: Vowel, Rune: "eə"},
+	{ID: "16", Img: canvas.NewImageFromResource(resource17Png), Resource: resource17Png, Type: Vowel, Rune: "oʊ"},
+	{ID: "17", Img: canvas.NewImageFromResource(resource18Png), Resource: resource18Png, Type: Vowel, Rune: "ær"},
 }
-var defaultConsonants = []alphabetItem{
+var definitiveConsonants = []alphabetItem{
 	{ID: "18", Img: canvas.NewImageFromResource(resource19Png), Resource: resource19Png, Type: Consonant, Rune: "m"},
 	{ID: "19", Img: canvas.NewImageFromResource(resource20Png), Resource: resource20Png, Type: Consonant, Rune: "n"},
 	{ID: "20", Img: canvas.NewImageFromResource(resource21Png), Resource: resource21Png, Type: Consonant, Rune: "ŋ"},
@@ -73,9 +73,9 @@ var defaultConsonants = []alphabetItem{
 	{ID: "33", Img: canvas.NewImageFromResource(resource34Png), Resource: resource34Png, Type: Consonant, Rune: "s"},
 	{ID: "34", Img: canvas.NewImageFromResource(resource35Png), Resource: resource35Png, Type: Consonant, Rune: "z"},
 	{ID: "35", Img: canvas.NewImageFromResource(resource36Png), Resource: resource36Png, Type: Consonant, Rune: "ʃ"},
-	{ID: "36", Img: canvas.NewImageFromResource(resource37Png), Resource: resource37Png, Type: Consonant, Rune: "?"},
-	{ID: "37", Img: canvas.NewImageFromResource(resource38Png), Resource: resource38Png, Type: Consonant, Rune: "ˈh"},
-	{ID: "38", Img: canvas.NewImageFromResource(resource39Png), Resource: resource39Png, Type: Consonant, Rune: "r"},
+	{ID: "36", Img: canvas.NewImageFromResource(resource37Png), Resource: resource37Png, Type: Consonant, Rune: "ʒ"},
+	{ID: "37", Img: canvas.NewImageFromResource(resource38Png), Resource: resource38Png, Type: Consonant, Rune: "h"},
+	{ID: "38", Img: canvas.NewImageFromResource(resource39Png), Resource: resource39Png, Type: Consonant, Rune: "ɹ"},
 	{ID: "39", Img: canvas.NewImageFromResource(resource40Png), Resource: resource40Png, Type: Consonant, Rune: "j"},
 	{ID: "40", Img: canvas.NewImageFromResource(resource41Png), Resource: resource41Png, Type: Consonant, Rune: "w"},
 	{ID: "41", Img: canvas.NewImageFromResource(resource42Png), Resource: resource42Png, Type: Consonant, Rune: "l"},
@@ -87,9 +87,36 @@ var specialChars = []alphabetItem{
 	{ID: "44", Img: canvas.NewImageFromResource(resourceQuestionMarkPng), Resource: resourceQuestionMarkPng, Type: Special, Rune: "?"},
 }
 
-// defaultAlphabet returns the default alphabet
-func defaultAlphabet() []alphabetItems {
-	return []alphabetItems{defaultVowels, defaultConsonants}
+// definitiveAlphabet returns the default alphabet
+func definitiveAlphabet() []alphabetItems {
+	return []alphabetItems{definitiveVowels, definitiveConsonants}
+}
+
+func emptyAlphabet() []alphabetItems {
+	ret := make([]alphabetItems, 0)
+	emptyVowels := make([]alphabetItem, 0)
+	for _, item := range definitiveVowels {
+		emptyVowels = append(emptyVowels, alphabetItem{
+			ID:       item.ID,
+			Img:      item.Img,
+			Resource: item.Resource,
+			Rune:     "_",
+			Type:     item.Type,
+		})
+	}
+	ret = append(ret, emptyVowels)
+	emptyConsonants := make([]alphabetItem, 0)
+	for _, item := range definitiveConsonants {
+		emptyConsonants = append(emptyConsonants, alphabetItem{
+			ID:       item.ID,
+			Img:      item.Img,
+			Resource: item.Resource,
+			Rune:     "_",
+			Type:     item.Type,
+		})
+	}
+	ret = append(ret, emptyConsonants)
+	return ret
 }
 
 // currentAlphabet returns the current alphabet loaded in the application.
@@ -97,7 +124,7 @@ func defaultAlphabet() []alphabetItems {
 func currentAlphabet() alphabetItems {
 	all, err := storage.Load[alphabetItems]("alphabet.tnc")
 	if err != nil {
-		all = defaultAlphabet()
+		all = emptyAlphabet()
 	}
 
 	ret := make(alphabetItems, 0)
@@ -171,7 +198,7 @@ func (a alphabetItems) FromSave(s string) alphabetItems {
 	}
 
 	alphabetMap := make(map[string]alphabetItem)
-	for _, item := range append(defaultVowels, defaultConsonants...) {
+	for _, item := range append(definitiveVowels, definitiveConsonants...) {
 		alphabetMap[item.ID] = item
 	}
 

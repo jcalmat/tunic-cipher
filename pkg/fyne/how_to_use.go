@@ -27,6 +27,16 @@ func howToUse(w fyne.Window) fyne.CanvasObject {
 
 The **Tunic Cipher** is a tool designed to help you transcribe and decipher texts written in the Tunic script.
 
+<br/><br/><br/><br/>
+
+By design, this tool doesn't provide a direct mapping between Tunic glyphs and the language you're translating to. Instead, it allows you to deduce your own version alphabet and use it to decipher Tunic's texts.
+
+That being said, if at some point you're bored of filling the alphabet by yourself, that's alright. The tool allows you to load the final Tunic alphabet.
+
+<br/><br/><br/><br/>
+
+Before starting, even though you're probably eager to jump into the tool, it's important to understand how to read Tunic texts. Let's dive in!
+
 <br/><br/><br/><br/><br/><br/><br/><br/>
 
 ## Reading Tunic Texts
